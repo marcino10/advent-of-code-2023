@@ -291,3 +291,4 @@ pyrightconfig.json
 ### Custom
 .idea/
 inputs/example.txt
+test.py
