@@ -35,9 +35,6 @@ def append_sorted_hands(deck):
             sorted_hands.append(hand)
 
 
-cards_value = {'A': 14, 'K': 13, 'Q': 12, 'J': 11, 'T': 10, '9': 9, '8': 8, '7': 7, '6': 6, '5': 5, '4': 4, '3': 3,
-               '2': 2}
-
 hands = re.findall(r"\w{5}(?= )", data)
 bids = re.findall(r"(?<= )\d+", data)
 
@@ -49,6 +46,9 @@ three_hands = []
 two_hands = []
 one_hands = []
 high_hands = []
+
+cards_value = {'A': 14, 'K': 13, 'Q': 12, 'J': 1, 'T': 10, '9': 9, '8': 8, '7': 7, '6': 6, '5': 5, '4': 4, '3': 3,
+               '2': 2}
 
 hand_to_bids = {}
 bid_index = 0
@@ -62,19 +62,24 @@ for hand in hands:
     three_cards = 0
     pair_cards = 0
     is_assign = False
+    num_of_card = dict(sorted(num_of_card.items(), key=lambda item: item[1], reverse=True))
+
     for card_key in num_of_card:
-        if num_of_card[card_key] == 5:
-            five_hands.append(hand)
-            is_assign = True
-            break
-        elif num_of_card[card_key] == 4:
-            four_hands.append(hand)
-            is_assign = True
-            break
-        if num_of_card[card_key] == 3:
-            three_cards += 1
-        if num_of_card[card_key] == 2:
-            pair_cards += 1
+        if card_key != 'J':
+            if num_of_card[card_key] + num_of_card['J'] == 5:
+                five_hands.append(hand)
+                is_assign = True
+                break
+            elif num_of_card[card_key] + num_of_card['J'] == 4:
+                four_hands.append(hand)
+                is_assign = True
+                break
+            elif num_of_card[card_key] + num_of_card['J'] >= 3:
+                three_cards += 1
+                num_of_card['J'] -= 3 - num_of_card[card_key]
+            elif num_of_card[card_key] + num_of_card['J'] >= 2:
+                pair_cards += 1
+                num_of_card['J'] -= 2 - num_of_card[card_key]
 
     if not is_assign:
         if three_cards == 1 and pair_cards == 1:
@@ -90,6 +95,48 @@ for hand in hands:
 
     hand_to_bids[hand] = bids[bid_index]
     bid_index += 1
+
+# cards_value = {'A': 14, 'K': 13, 'Q': 12, 'J': 11, 'T': 10, '9': 9, '8': 8, '7': 7, '6': 6, '5': 5, '4': 4, '3': 3,
+#                '2': 2}
+#
+# for hand in hands:
+#     num_of_card = {'A': 0, 'K': 0, 'Q': 0, 'J': 0, 'T': 0, '9': 0, '8': 0, '7': 0, '6': 0, '5': 0, '4': 0, '3': 0,
+#                    '2': 0}
+#
+#     for card in hand:
+#         num_of_card[card] += 1
+#
+#     three_cards = 0
+#     pair_cards = 0
+#     is_assign = False
+#     for card_key in num_of_card:
+#         if num_of_card[card_key] == 5:
+#             five_hands.append(hand)
+#             is_assign = True
+#             break
+#         elif num_of_card[card_key] == 4:
+#             four_hands.append(hand)
+#             is_assign = True
+#             break
+#         elif num_of_card[card_key] == 3:
+#             three_cards += 1
+#         elif num_of_card[card_key] == 2:
+#             pair_cards += 1
+#
+#     if not is_assign:
+#         if three_cards == 1 and pair_cards == 1:
+#             full_hands.append(hand)
+#         elif three_cards == 1:
+#             three_hands.append(hand)
+#         elif pair_cards == 2:
+#             two_hands.append(hand)
+#         elif pair_cards == 1:
+#             one_hands.append(hand)
+#         else:
+#             high_hands.append(hand)
+#
+#     hand_to_bids[hand] = bids[bid_index]
+#     bid_index += 1
 
 sorted_hands = []
 append_sorted_hands(five_hands)
